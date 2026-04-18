@@ -78,7 +78,7 @@ The most useful settings are:
   servers are started automatically for eligible package buffers.
 - `eglot-rcpp-enable-consult-integration`: opt in to the package-scoped
   `consult-eglot-symbols` dispatch. Outside package buffers, Consult keeps its
-  normal behavior.
+  normal behavior. If enabled, it adds global advise to `consult-eglot-symbols` so you you can use your existing bindings. 
 - `eglot-rcpp-r-server-command` and `eglot-rcpp-clangd-command`: override the
   commands used to launch the R language server and `clangd`.
 - `eglot-rcpp-enable-clangd-fallback-flags`,
