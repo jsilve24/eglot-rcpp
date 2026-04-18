@@ -25,7 +25,7 @@ Core mixed-project support depends on:
 - supplements R completion with functions exposed through generated
   `RcppExports` bridge files
 - treats generated bridge files as useful for completion and discovery
-- deprioritizes generated bridge files as definition targets by default when
+- deprioritizes generated bridge files as xref-find-definition targets by default when
   real source locations exist
 
 ## Requirements
