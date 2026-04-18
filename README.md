@@ -53,8 +53,6 @@ started:
 ```elisp
 (use-package eglot-rcpp
   :straight (:type git :host github :repo "jsilve24/eglot-rcpp")
-  ;; `eglot-rcpp` stays quiet until you open an eligible R package buffer.
-  ;; These are the two settings most people will want to decide on up front.
   :custom
   (eglot-rcpp-enable-consult-integration t)
   (eglot-rcpp-enable-ess-keybindings t)
