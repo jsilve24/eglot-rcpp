@@ -47,56 +47,53 @@ Optional:
 
 ## Installation
 
-This package is intended to live in your local `.emacs.d` tree.
+If you keep the repository in your Emacs load path, this is enough to get
+started:
 
 ```elisp
-(add-to-list 'load-path (expand-file-name "eglot-rcpp" user-emacs-directory))
-(require 'eglot-rcpp)
-(eglot-rcpp-setup)
+(use-package eglot-rcpp
+  :load-path "path/to/eglot-rcpp"
+  ;; `eglot-rcpp` stays quiet until you open an eligible R package buffer.
+  ;; These are the two settings most people will want to decide on up front.
+  :custom
+  (eglot-rcpp-enable-consult-integration t)
+  (eglot-rcpp-enable-ess-keybindings t)
+  :config
+  (eglot-rcpp-setup))
 ```
 
-`require` only defines the package. `eglot-rcpp-setup` installs the hooks and
-project-aware server registrations. Actual activation is still gated by project
-checks, so unrelated buffers are left alone.
+`eglot-rcpp-setup` installs the hooks and project-aware server registrations.
+Actual activation is still gated by project checks, so unrelated buffers are
+left alone.
 
-## Setup
+## Settings
 
-Minimal setup:
+The most useful settings are:
 
-```elisp
-(setq eglot-rcpp-enable-consult-integration t) ; optional
-(require 'eglot-rcpp)
-(eglot-rcpp-setup)
-```
-
-Optional customization:
-
-```elisp
-(setq eglot-rcpp-enable-ess-keybindings t)
-```
-
-If you enable `eglot-rcpp-enable-consult-integration`, `consult-eglot-symbols`
-is advised only inside relevant Rcpp package buffers. Outside those buffers,
-Consult behaves normally.
-
-The main user options are:
-
-- `eglot-rcpp-root-marker-file`
-- `eglot-rcpp-r-modes`
-- `eglot-rcpp-cpp-modes`
-- `eglot-rcpp-source-directories`
-- `eglot-rcpp-header-directories`
-- `eglot-rcpp-auto-start-companion-servers`
-- `eglot-rcpp-enable-consult-integration`
-- `eglot-rcpp-r-server-command`
-- `eglot-rcpp-clangd-command`
-- `eglot-rcpp-enable-clangd-fallback-flags`
-- `eglot-rcpp-clangd-default-standard`
-- `eglot-rcpp-clangd-extra-fallback-flags`
-- `eglot-rcpp-restrict-xref-results-to-project`
-- `eglot-rcpp-generated-file-regexps`
-- `eglot-rcpp-generated-definition-policy`
-- `eglot-rcpp-enable-ess-keybindings`
+- `eglot-rcpp-root-marker-file`: the file used to recognize an R package
+  project. The default is `DESCRIPTION`.
+- `eglot-rcpp-r-modes` and `eglot-rcpp-cpp-modes`: the major modes that count
+  as package-aware R or C/C++ buffers.
+- `eglot-rcpp-source-directories` and `eglot-rcpp-header-directories`: where
+  the package scanner looks for source and header files.
+- `eglot-rcpp-auto-start-companion-servers`: when non-nil, the R and clangd
+  servers are started automatically for eligible package buffers.
+- `eglot-rcpp-enable-consult-integration`: opt in to the package-scoped
+  `consult-eglot-symbols` dispatch. Outside package buffers, Consult keeps its
+  normal behavior.
+- `eglot-rcpp-r-server-command` and `eglot-rcpp-clangd-command`: override the
+  commands used to launch the R language server and `clangd`.
+- `eglot-rcpp-enable-clangd-fallback-flags`,
+  `eglot-rcpp-clangd-default-standard`, and
+  `eglot-rcpp-clangd-extra-fallback-flags`: control the clangd fallback flags
+  that are synthesized for ordinary Rcpp package layouts.
+- `eglot-rcpp-restrict-xref-results-to-project`: keep xref results inside the
+  current package root unless you deliberately want external hits.
+- `eglot-rcpp-generated-file-regexps` and
+  `eglot-rcpp-generated-definition-policy`: tell `eglot-rcpp` how to treat
+  generated bridge files such as `RcppExports.R` and `RcppExports.cpp`.
+- `eglot-rcpp-enable-ess-keybindings`: turn on the optional ESS key prefix for
+  package maintenance commands.
 
 ## Generated File Behavior
 
