@@ -1730,8 +1730,12 @@ With prefix argument PROMPT-INSTALL, offer to install missing packages."
         (setq open nil))
       (funcall jump
                action
-               (when-let* ((xref (and cand
-                                      (get-text-property 0 'consult--candidate cand)))
+               ;; Newer Consult passes the looked-up candidate to state
+               ;; functions, while older versions pass the display string.
+               (when-let* ((xref (cond
+                                  ((xref-item-p cand) cand)
+                                  ((stringp cand)
+                                   (get-text-property 0 'consult--candidate cand))))
                            (location (xref-item-location xref))
                            ((xref-file-location-p location)))
                  (consult--marker-from-line-column
