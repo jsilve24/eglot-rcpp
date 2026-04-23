@@ -765,8 +765,7 @@ When ROOT is nil, use the current buffer's project root."
   (let ((seen (make-hash-table :test #'eq)))
     (cl-loop for buffer in (eglot-rcpp--project-buffers root)
              for server = (with-current-buffer buffer
-                            (and (bound-and-true-p eglot-managed-mode)
-                                 (eglot-rcpp--current-server)))
+                            (eglot-rcpp--current-server))
              unless (or (null server) (gethash server seen))
              do (puthash server t seen)
              and collect buffer)))
@@ -1220,12 +1219,12 @@ When EXACT is non-nil, require exact-ish symbol matching."
 
 (defun eglot-rcpp--current-eglot-definitions (identifier)
   "Return current-buffer Eglot definitions for IDENTIFIER."
-  (when (bound-and-true-p eglot-managed-mode)
+  (when (eglot-rcpp--current-server)
     (ignore-errors (xref-backend-definitions 'eglot identifier))))
 
 (defun eglot-rcpp--current-eglot-references (identifier)
   "Return current-buffer Eglot references for IDENTIFIER."
-  (when (bound-and-true-p eglot-managed-mode)
+  (when (eglot-rcpp--current-server)
     (ignore-errors (xref-backend-references 'eglot identifier))))
 
 (defun eglot-rcpp--symbol-search-servers (&optional root)
@@ -1531,13 +1530,21 @@ ORIG-FN and ARGS are the advised command and its original arguments."
       (eglot-rcpp--set-pending-companion-start root kind nil))
     (eglot-rcpp-maybe-start-companion-server)))
 
+(defun eglot-rcpp--activate-existing-buffers ()
+  "Activate `eglot-rcpp-mode' in already-live managed buffers."
+  (dolist (buffer (buffer-list))
+    (with-current-buffer buffer
+      (when (apply #'derived-mode-p (eglot-rcpp--all-managed-modes))
+        (eglot-rcpp--activate-current-buffer)))))
+
 (defun eglot-rcpp--install-hooks ()
   "Install global `eglot-rcpp' hooks once."
   (unless eglot-rcpp--hooks-installed
     (setq eglot-rcpp--hooks-installed t)
     (dolist (mode (eglot-rcpp--all-managed-modes))
       (add-hook (eglot-rcpp--mode-hook mode) #'eglot-rcpp--activate-current-buffer))
-    (add-hook 'eglot-managed-mode-hook #'eglot-rcpp--eglot-managed-hook))
+    (add-hook 'eglot-managed-mode-hook #'eglot-rcpp--eglot-managed-hook)
+    (eglot-rcpp--activate-existing-buffers))
   (eglot-rcpp--sync-consult-integration))
 
 (defun eglot-rcpp--install-consult-advice ()
